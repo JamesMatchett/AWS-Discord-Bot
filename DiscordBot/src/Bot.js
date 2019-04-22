@@ -5,6 +5,7 @@ var Aws = awsCli.Aws;
 const { ACCESSKEY } = require('../config.json');
 const { SECRETKEY } = require('../config.json');
 const { SESSIONTOKEN } = require('../config.json');
+const { INSTANCE } = require('../config.json');
 
 let options = new Options(
   /* accessKey    */ ACCESSKEY,
@@ -13,7 +14,7 @@ let options = new Options(
   /* currentWorkingDirectory */ null
 );
  
-var aws = new Aws(options);
+const aws = new Aws(options);
 
 const eris = require('eris');
 const { BOT_TOKEN } = require('../config.json');
@@ -36,12 +37,21 @@ const commandHandlerForCommandName = {};
 commandHandlerForCommandName['start'] = (msg, args) => {
   const mention = args[0];
   console.warn("Starting the server");
+
+  aws.command('ec2 start-instances --instance-ids ${INSTANCE}').then(function (data) {
+  console.warn('data = ', data); 
+});
+
   return msg.channel.createMessage(`<@${msg.author.id}> starting the server`);
 };
 
 commandHandlerForCommandName['stop'] = (msg, args) => {
 console.warn("Stopping the server");
-return msg.channel.createMessage('Stopping the server and saving the world'); };
+aws.command('ec2 stop-instances --instance-ids ${INSTANCE}').then(function (data) {
+  console.warn('data = ', data); 
+});
+ return msg.channel.createMessage(`<@${msg.author.id}> Stopping and saving the server`);
+};
 
 commandHandlerForCommandName['uwu'] = (msg, args) => {
 return msg.channel.createMessage('https://giphy.com/gifs/adorable-3-owo-D8nU1wFQ62aZ2'); };
