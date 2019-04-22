@@ -1,0 +1,18 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "Manages tekkit instances",
+  "main": "index.js",
+  "scripts": {
+    "start": "Bot.js"
+  },
+  "author": "James Matchett",
+  "license": "ISC",
+  "dependencies": {
+    "aws-cli-js": "^2.0.5",
+    "body-parser": "^1.18.3",
+    "eris": "^0.9.0",
+    "express": "^4.16.4",
+    "options": "0.0.6"
+  }
+}
