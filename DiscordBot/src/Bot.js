@@ -6,6 +6,8 @@ const { ACCESSKEY } = require('../config.json');
 const { SECRETKEY } = require('../config.json');
 const { SESSIONTOKEN } = require('../config.json');
 const { INSTANCE } = require('../config.json');
+const StartCommand = 'ec2 start-instances --instance-ids ' + INSTANCE
+const StopCommand = 'ec2 stop-instances --instance-ids ' + INSTANCE
 
 let options = new Options(
   /* accessKey    */ ACCESSKEY,
@@ -23,7 +25,7 @@ const { CHANNELID } = require('../config.json');
 
 const PREFIX = '$aws';
 const HelpDocs = 
-'\n Help Docs: \n `start`: Starts the tekkit server \n `stop`: Stops the tekkit server \n `status`: Displays server and bot status \n `list`: Lists players currently on the server \n `save`: Forces a backup to be saved, useful if server is unstable \n `help`: Displays help docs \n For any further help, ask <@193482978586918913>';
+'\n Help Docs: \n `start`: Starts the tekkit server \n `stop`: Stops the tekkit server \n 
 
 // Create a Client instance with our bot token.
 const bot = new eris.Client(BOT_TOKEN);
@@ -38,23 +40,20 @@ commandHandlerForCommandName['start'] = (msg, args) => {
   const mention = args[0];
   console.warn("Starting the server");
 
-  aws.command('ec2 start-instances --instance-ids ${INSTANCE}').then(function (data) {
+  aws.command(StartCommand).then(function (data) {
   console.warn('data = ', data); 
 });
 
-  return msg.channel.createMessage(`<@${msg.author.id}> starting the server`);
+  return msg.channel.createMessage(`<@${msg.author.id}> Starting the server`);
 };
 
 commandHandlerForCommandName['stop'] = (msg, args) => {
 console.warn("Stopping the server");
-aws.command('ec2 stop-instances --instance-ids ${INSTANCE}').then(function (data) {
+aws.command(StopCommand).then(function (data) {
   console.warn('data = ', data); 
 });
  return msg.channel.createMessage(`<@${msg.author.id}> Stopping and saving the server`);
 };
-
-commandHandlerForCommandName['uwu'] = (msg, args) => {
-return msg.channel.createMessage('https://giphy.com/gifs/adorable-3-owo-D8nU1wFQ62aZ2'); };
 
 commandHandlerForCommandName['help'] = (msg, args) => {
 return msg.channel.createMessage(HelpDocs); };
@@ -84,7 +83,7 @@ if(!msg.member.roles.includes(ROLEID)) {
 
 
 if(botWasMentioned){
-  await msg.channel.createMessage('Brewing the coffee');
+  await msg.channel.createMessage('Brewing the coffee and ready to go!');
 }
 
 //ignore dms, guild messages only
