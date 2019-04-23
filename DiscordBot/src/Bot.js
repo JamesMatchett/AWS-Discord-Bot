@@ -25,7 +25,7 @@ const { CHANNELID } = require('../config.json');
 
 const PREFIX = '$aws';
 const HelpDocs = 
-'\n Help Docs: \n `start`: Starts the tekkit server \n `stop`: Stops the tekkit server \n 
+'\n Help Docs: \n `start`: Starts the server \n `stop`: Stops the server \n 
 
 // Create a Client instance with our bot token.
 const bot = new eris.Client(BOT_TOKEN);
@@ -72,6 +72,7 @@ if(!(msg.channel.id === CHANNELID)){
 return;
 }
 
+//if the message is sent by a bot, ignore it
 if(msg.author.bot){
 return;
 }
