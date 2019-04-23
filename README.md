@@ -1,5 +1,6 @@
 # AWS-Discord-Bot
-Discord bot used for toggling AWS instances on or off via chat commands in a Discord text channel
+Discord bot used for toggling AWS instances on or off via chat commands in a Discord text channel 
+Thanks to the writer of this article here for the very useful guide https://www.toptal.com/chatbot/how-to-make-a-discord-bot
 
 ## To get started
 * Download node and aws-cli onto your machine
