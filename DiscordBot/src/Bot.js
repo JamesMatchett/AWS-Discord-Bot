@@ -6,6 +6,8 @@ const { ACCESSKEY } = require('../config.json');
 const { SECRETKEY } = require('../config.json');
 const { SESSIONTOKEN } = require('../config.json');
 const { INSTANCE } = require('../config.json');
+const { MESSAGELOGGING } = require('../config.json');
+var verboseLog = (MESSAGELOGGING === 'T');
 const StartCommand = 'ec2 start-instances --instance-ids ' + INSTANCE
 const StopCommand = 'ec2 stop-instances --instance-ids ' + INSTANCE
 
@@ -46,7 +48,13 @@ commandHandlerForCommandName['start'] = (msg, args) => {
                 console.warn('data = ', data);
                 return msg.channel.createMessage(`<@${msg.author.id}> Starting the server`);
             })
-            .catch(e => msg.channel.createMessage(`<@${msg.author.id}> Error starting the server,  ${e}`));
+            .catch(function (e) {
+                if (verboseLog) {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error starting the server,  ${e}`)
+                } else {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error starting the server`);
+                }
+            });
     } catch (err) {
         msg.channel.createMessage(`<@${msg.author.id}> Error starting the server`);
         return msg.channel.createMessage(err);
@@ -62,7 +70,14 @@ commandHandlerForCommandName['stop'] = (msg, args) => {
                 console.warn('data = ', data);
                 return msg.channel.createMessage(`<@${msg.author.id}> Stopping and saving the server`);
             })
-            .catch(e => msg.channel.createMessage(`<@${msg.author.id}> Error stopping the server,  ${e}`));
+            .catch(function (e) {
+                if (verboseLog) {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error stopping the server,  ${e}`);
+                } else {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error stopping the server`);
+                }
+            });
+
     } catch (err) {
         msg.channel.createMessage(`<@${msg.author.id}> Error stopping the server`);
         return msg.channel.createMessage(err);
