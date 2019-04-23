@@ -2,11 +2,11 @@
 Discord bot used for toggling AWS instances on or off via chat commands in a Discord text channel
 
 ## To get started
-Download node and aws-cli onto your machine
-Create a discord application here https://discordapp.com/developers/applications/ and create a bot user under it
-Add the bot account to your discord server
-Create a dedicated role on your discord server as well as a dedicated text channel for the bot
-Gather the required credentials and IDs needed from AWS and Discord mentioned below
+* Download node and aws-cli onto your machine
+* Create a discord application here https://discordapp.com/developers/applications/ and create a bot user under it
+* Add the bot account to your discord server
+* Create a dedicated role on your discord server as well as a dedicated text channel for the bot
+* Gather the required credentials and IDs needed from AWS and Discord mentioned below
 
 In the DiscordBot folder make a Json file called "config.json" and add the following values in this format 
 ```
