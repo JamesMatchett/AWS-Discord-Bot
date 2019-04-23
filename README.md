@@ -19,6 +19,7 @@ In the DiscordBot folder make a Json file called "config.json" and add the follo
 "SECRETKEY": "*Insert the AWS generated secret key here*",
 "SESSIONTOKEN": "*Insert the AWS session token here (may not be needed)*",
 "INSTANCE": "*Insert the instance ID of the AWS instance you wish to toggle from the bot*"
+"MESSAGELOGGING": "F" (or leave as 'T' if you want specific error messages logged to the Discord channel which may contain sensitive info                       like keys or instance IDs)
 }
 ```
 
