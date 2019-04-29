@@ -41,54 +41,41 @@ bot.on('ready', () => {
 
 const commandHandlerForCommandName = {};
 commandHandlerForCommandName['start'] = (msg, args) => {
-    const mention = args[0];
-    console.warn("Starting the server");
-
-    try {
-        aws.command(StartCommand)
-            .then(function (data) {
-                console.warn('data = ', data);
-                return msg.channel.createMessage(`<@${msg.author.id}> Starting the server`);
-            })
-            .catch(function (e) {
-                if (verboseLog) {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error starting the server,  ${e}`)
-                } else {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error starting the server`);
-                }
-            });
-    } catch (err) {
-        msg.channel.createMessage(`<@${msg.author.id}> Error starting the server`);
-        return msg.channel.createMessage(err);
-    }
+    startStop(true, msg);
 };
 
 commandHandlerForCommandName['stop'] = (msg, args) => {
-    console.warn("Stopping the server");
-
-    try {
-        aws.command(StopCommand)
-            .then(function (data) {
-                console.warn('data = ', data);
-                return msg.channel.createMessage(`<@${msg.author.id}> Stopping and saving the server`);
-            })
-            .catch(function (e) {
-                if (verboseLog) {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error stopping the server,  ${e}`);
-                } else {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error stopping the server`);
-                }
-            });
-
-    } catch (err) {
-        msg.channel.createMessage(`<@${msg.author.id}> Error stopping the server`);
-        return msg.channel.createMessage(err);
-    }
+    startStop(false, msg);
 };
 
 commandHandlerForCommandName['help'] = (msg, args) => {
     return msg.channel.createMessage(HelpDocs);
 };
+
+function startStop(isStart, msg)
+	var cmd = isStart ? StartCommand : StopCommand;
+	var word = isStart ? 'Starting' : 'Stopping';
+	console.warn(`${word} the server`);
+	try {
+        aws.command(cmd)
+            .then(function (data) {
+                console.warn('data = ', data);
+                return msg.channel.createMessage(`<@${msg.author.id}> ${word} the server`);
+            })
+            .catch(function (e) {
+                if (verboseLog) {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error ${word} the server,  ${e}`);
+                } else {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error ${word} the server`);
+                }
+            });
+
+    } catch (err) {
+        msg.channel.createMessage(`<@${msg.author.id}> Error ${word} the server`);
+        return msg.channel.createMessage(err);
+    }
+}
+	
 
 commandHandlerForCommandName['status'] = (msg, args) => {
     console.warn("Getting server status");
