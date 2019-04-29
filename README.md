@@ -33,5 +33,6 @@ You can change the prefix if you'd like but hopefully by typing:
 ``` 
 $aws start
 $aws stop
+$aws status
 ```
-You, and anyone else you give the role and channel access to, should be able to toggle the selected AWS instance on or off when needed.
+You, and anyone else you give the role and channel access to, should be able to toggle the selected AWS instance on or off when needed as well as view instance information on demand.
