@@ -8,8 +8,9 @@ const { SESSIONTOKEN } = require('../config.json');
 const { INSTANCE } = require('../config.json');
 const { MESSAGELOGGING } = require('../config.json');
 var verboseLog = (MESSAGELOGGING === 'T');
-const StartCommand = 'ec2 start-instances --instance-ids ' + INSTANCE
-const StopCommand = 'ec2 stop-instances --instance-ids ' + INSTANCE
+const StartCommand = 'ec2 start-instances --instance-ids ' + INSTANCE;
+const StopCommand = 'ec2 stop-instances --instance-ids ' + INSTANCE;
+const StatusCommand = 'ec2 describe-instances --instance-id ' + INSTANCE;
 
 let options = new Options(
   /* accessKey    */ ACCESSKEY,
@@ -27,7 +28,8 @@ const { CHANNELID } = require('../config.json');
 
 const PREFIX = '$aws';
 const HelpDocs =
-    '\n Help Docs: \n `start`: Starts the server \n `stop`: Stops the server \n ';
+    '\n Help Docs: \n `start`: Starts the server \n `stop`: Stops the server \n `status`: Returns the server status  ';
+
 
 // Create a Client instance with our bot token.
 const bot = new eris.Client(BOT_TOKEN);
@@ -88,6 +90,30 @@ commandHandlerForCommandName['help'] = (msg, args) => {
     return msg.channel.createMessage(HelpDocs);
 };
 
+commandHandlerForCommandName['status'] = (msg, args) => {
+    console.warn("Getting server status");
+    try {
+        aws.command(StatusCommand)
+            .then(function (data) {
+		var reply = data.object.Reservations[0].Instances[0];
+                return msg.channel.createMessage(`<@${msg.author.id}> *Status: \n **Name**: ${reply.KeyName} \n **State**: ${reply.State.Name} \n **IP Address**: ${reply.PublicIpAddress} \n **Last Startup**: ${reply.LaunchTime}*`);
+            })
+            .catch(function (e) {
+                if (verboseLog) {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error getting status,  ${e}`);
+                } else {
+                    msg.channel.createMessage(`<@${msg.author.id}> Error getting status`);
+                }
+		console.warn(e);
+            });
+
+    } catch (err) {
+	console.warn(err);
+        msg.channel.createMessage(`<@${msg.author.id}> Error getting status`);
+        return msg.channel.createMessage(err);
+    }
+};
+
 // Every time a message is sent anywhere the bot is present,
 // this event will fire and we will check if the bot was mentioned.
 // If it was, the bot will attempt to respond with "Present".
@@ -111,7 +137,6 @@ bot.on('messageCreate', async (msg) => {
         await msg.channel.createMessage(`<@${msg.author.id}> You do not have the required roles`);
         return;
     }
-
 
     if (botWasMentioned) {
         await msg.channel.createMessage('Brewing the coffee and ready to go!');
