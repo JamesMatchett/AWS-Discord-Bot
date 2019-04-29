@@ -52,7 +52,7 @@ commandHandlerForCommandName['help'] = (msg, args) => {
     return msg.channel.createMessage(HelpDocs);
 };
 
-function startStop(isStart, msg)
+function startStop(isStart, msg){
 	var cmd = isStart ? StartCommand : StopCommand;
 	var word = isStart ? 'Starting' : 'Stopping';
 	console.warn(`${word} the server`);
