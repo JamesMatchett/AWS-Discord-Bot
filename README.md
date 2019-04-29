@@ -1,5 +1,4 @@
-# AWS-Discord-Bot 
-[![codebeat badge](https://codebeat.co/badges/017b9bdd-d5ca-4b4a-a334-ccc6cf8bdb06)](https://codebeat.co/projects/github-com-jamesmatchett-aws-discord-bot-master)
+# AWS-Discord-Bot [![codebeat badge](https://codebeat.co/badges/017b9bdd-d5ca-4b4a-a334-ccc6cf8bdb06)](https://codebeat.co/projects/github-com-jamesmatchett-aws-discord-bot-master)
 
 Discord bot used for toggling AWS instances on or off via chat commands in a Discord text channel 
 Thanks to the writer of this article here for the very useful guide https://www.toptal.com/chatbot/how-to-make-a-discord-bot
