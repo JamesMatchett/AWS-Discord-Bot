@@ -29,10 +29,10 @@ Command prompt into the DiscordBot folder and run
 ```
 node src/Bot.js
 ```
-You can change the prefix if you'd like but hopefully by typing: 
+Commands: 
 ``` 
-$aws start
-$aws stop
-$aws status
+$aws start (Starts the specified instance)
+$aws stop (Stops the specified instance)
+$aws status (Returns information about the instance, i.e. if it is running, it's IP, it's last startTime)
 ```
 You, and anyone else you give the role and channel access to, should be able to toggle the selected AWS instance on or off when needed as well as view instance information on demand.
