@@ -4,7 +4,7 @@ Discord bot used for managing AWS instances including status and toggling on or 
 Thanks to the writer of this article here for the very useful guide https://www.toptal.com/chatbot/how-to-make-a-discord-bot
 
 ## To get started
-* Download node and aws-cli onto your machine
+* Download node and aws-cli onto your machine https://nodejs.org/en/ https://aws.amazon.com/cli/
 * Run `aws configure` from command prompt on the machine you wish to host the bot from
 * Create a discord application here https://discordapp.com/developers/applications/ and create a bot user under it
 * Add the bot account to your discord server
