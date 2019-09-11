@@ -83,7 +83,7 @@ commandHandlerForCommandName['status'] = (msg, args) => {
         aws.command(StatusCommand)
             .then(function (data) {
 		var reply = data.object.Reservations[0].Instances[0];
-                return msg.channel.createMessage(`<@${msg.author.id}> *Status: \n **Name**: ${reply.Tags.Value} \n **State**: ${reply.State.Name} \n **IP Address**: ${reply.PublicIpAddress} \n **Last Startup**: ${reply.LaunchTime}*`);
+                return msg.channel.createMessage(`<@${msg.author.id}> *Status: \n **Name**: ${reply.Tags[0].Value} \n **State**: ${reply.State.Name} \n **IP Address**: ${reply.PublicIpAddress} \n **Last Startup**: ${reply.LaunchTime}*`);
             })
             .catch(function (e) {
                 if (verboseLog) {
