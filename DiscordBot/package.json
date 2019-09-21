@@ -9,10 +9,10 @@
   "author": "James Matchett",
   "license": "ISC",
   "dependencies": {
-    "aws-cli-js": "^2.0.5",
-    "body-parser": "^1.18.3",
+    "aws-cli-js": "^2.0.6",
+    "body-parser": "^1.19.0",
     "eris": "^0.9.0",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
     "options": "0.0.6"
   }
 }
