@@ -40,6 +40,7 @@ bot.on('ready', () => {
     console.log('Connected and ready.');
 });
 
+// starts instance and fires off query wait for instances
 const commandHandlerForCommandName = {};
 commandHandlerForCommandName['start'] = (msg, args) => {
     try {
@@ -89,6 +90,7 @@ commandHandlerForCommandName['help'] = (msg, args) => {
     return msg.channel.createMessage(HelpDocs);
 };
 
+// checks if instance is running and proceedes to get status of instance and players in arma server
 commandHandlerForCommandName['status'] = (msg, args) => {
     console.warn("Getting server status");
     try {
@@ -148,6 +150,7 @@ commandHandlerForCommandName['status'] = (msg, args) => {
     }
 };
 
+// queries game server passed
 async function queryServer(serverType, ipAddress, queryType) {
     var queryInstance = new gamedig();
     let result = queryInstance.query({
@@ -169,6 +172,9 @@ async function queryServer(serverType, ipAddress, queryType) {
     return result;
 }
 
+// waits until aws server is running and then checks arma and ts server
+// will wait 15 seconds inbetween tries with a max time of 200 seconds
+// sends message when everything has loaded 
 async function queryStart() {
     var attempts = 0;
     var serverOnline = false;
