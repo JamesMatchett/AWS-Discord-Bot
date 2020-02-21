@@ -1,4 +1,5 @@
 var awsCli = require('aws-cli-js');
+var gamedig = require('gamedig');
 var Options = awsCli.Options;
 var Aws = awsCli.Aws;
 
@@ -41,65 +42,192 @@ bot.on('ready', () => {
 
 const commandHandlerForCommandName = {};
 commandHandlerForCommandName['start'] = (msg, args) => {
-    startStop(true, msg);
+    try {
+        aws.command(StartCommand)
+            .then(async function (data) {
+                console.warn('data = ', data);
+                msg.channel.createMessage(`Starting the server, i will let you know when its ready`);
+                message = await queryStart();
+                return msg.channel.createMessage(message);
+            })
+            .catch(function (e) {
+                if (verboseLog) {
+                    msg.channel.createMessage(`Error starting the server,  ${e}`);
+                } else {
+                    msg.channel.createMessage(`Error starting the server`);
+                }
+            });
+
+    } catch (err) {
+        msg.channel.createMessage(`Error starting the server`);
+        return msg.channel.createMessage(err);
+    }
 };
 
 commandHandlerForCommandName['stop'] = (msg, args) => {
-    startStop(false, msg);
+    try {
+        aws.command(StopCommand)
+            .then(function (data) {
+                console.warn('data = ', data);
+                return msg.channel.createMessage(`Stopping the server, please wait a few minutes before starting again`);
+            })
+            .catch(function (e) {
+                if (verboseLog) {
+                    msg.channel.createMessage(`Error stopping the server,  ${e}`);
+                } else {
+                    msg.channel.createMessage(`Error stopping the server`);
+                }
+            });
+
+    } catch (err) {
+        msg.channel.createMessage(`Error stopping the server`);
+        return msg.channel.createMessage(err);
+    }
 };
 
 commandHandlerForCommandName['help'] = (msg, args) => {
     return msg.channel.createMessage(HelpDocs);
 };
 
-function startStop(isStart, msg){
-	var cmd = isStart ? StartCommand : StopCommand;
-	var word = isStart ? 'Starting' : 'Stopping';
-	console.warn(`${word} the server`);
-	try {
-        aws.command(cmd)
-            .then(function (data) {
-                console.warn('data = ', data);
-                return msg.channel.createMessage(`<@${msg.author.id}> ${word} the server`);
-            })
-            .catch(function (e) {
-                if (verboseLog) {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error ${word} the server,  ${e}`);
-                } else {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error ${word} the server`);
-                }
-            });
-
-    } catch (err) {
-        msg.channel.createMessage(`<@${msg.author.id}> Error ${word} the server`);
-        return msg.channel.createMessage(err);
-    }
-}
-	
-
 commandHandlerForCommandName['status'] = (msg, args) => {
     console.warn("Getting server status");
     try {
         aws.command(StatusCommand)
-            .then(function (data) {
-		var reply = data.object.Reservations[0].Instances[0];
-                return msg.channel.createMessage(`<@${msg.author.id}> *Status: \n **Name**: ${reply.Tags[0].Value} \n **State**: ${reply.State.Name} \n **IP Address**: ${reply.PublicIpAddress} \n **Last Startup**: ${reply.LaunchTime}*`);
-            })
-            .catch(function (e) {
-                if (verboseLog) {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error getting status,  ${e}`);
-                } else {
-                    msg.channel.createMessage(`<@${msg.author.id}> Error getting status`);
-                }
-		console.warn(e);
-            });
+        .then(function (data) {
+            return reply = data.object.Reservations[0].Instances[0];
+        })
+        .then(async function (reply) {
+            instanceState = reply.State.Name;
+            istanceLaunch = reply.LaunchTime;
+            ip = reply.PublicIpAddress;
+            var launchTime = new Date(istanceLaunch).toLocaleString("en-US", {timezone: "Australia/Sydney"});
 
+            message = `\`\`\`diff`
+            message +=`\nServer Status`
+            message += '\n________________________________';
+
+            if (instanceState == 'running') {
+                serverStatus = '+ Server: RUNNING';
+                armaStatusP = queryServer('arma3', ip, 'status');
+                tsStatusP = queryServer('teamspeak3', ip, 'status');
+                playersP = queryServer('arma3', ip, 'players');
+                let [armaStatus, tsStatus, players] = await Promise.all([armaStatusP, tsStatusP, playersP]);
+
+                message +=`\n${serverStatus}`;
+                message +=`\n${armaStatus}`;
+                message +=`\n${tsStatus}`;
+                message +=`\n  IP Address : ${ip}`;
+                message +=`\n  Launch Time : ${launchTime} \n`
+                
+                if(typeof players != 'undefined') {
+                    message +=`\n  Players: ${players.length}`
+                    players.forEach(player => {
+                        message+=`\n\t\t${player.name}`
+                    });
+                }
+
+            } else {
+                message += `\n- Server: ${instanceState.toUpperCase()}`;
+            }
+
+            message += '\n\`\`\`'
+            msg.channel.createMessage(message);
+        })
+        .catch(function (e) {
+            if (verboseLog) {
+                msg.channel.createMessage(`Error getting status,  ${e}`);
+            } else {
+                msg.channel.createMessage(`Error getting status`);
+            }
+            console.warn(e);
+        });
     } catch (err) {
 	console.warn(err);
-        msg.channel.createMessage(`<@${msg.author.id}> Error getting status`);
+        msg.channel.createMessage(`Error getting status`);
         return msg.channel.createMessage(err);
     }
 };
+
+async function queryServer(serverType, ipAddress, queryType) {
+    var queryInstance = new gamedig();
+    let result = queryInstance.query({
+        type: serverType,
+        host: ipAddress
+    }).then((state) => {
+        if(queryType == 'players') {
+            return state.players
+        } else if(queryType == 'status') {
+            return `+ ${serverType.toUpperCase()} Instance: ONLINE`;
+        }
+    }).catch((error) => {
+        if(queryType=='players') {
+
+        } else if (queryType == 'status') {
+            return `- ${serverType.toUpperCase()} Instance: OFFLINE`;
+        }
+    });
+    return result;
+}
+
+async function queryStart() {
+    var attempts = 0;
+    var serverOnline = false;
+    var tsOnline = false;
+    var a3Online = false;
+    var ipAddress;
+
+    while (attempts < 5 && !serverOnline) {
+        data = await aws.command(StatusCommand);
+        instance = data.object.Reservations[0].Instances[0];
+        if (instance.State.Name == "running") {
+            serverOnline = true;
+            ipAddress = instance.PublicIpAddress
+        } else {
+            console.log("server offline sleeping for 15 seconds");
+            await sleep(15000);
+        }
+        attempts++
+    }
+
+    console.log(serverOnline);
+
+    attempts = 0;
+    while (attempts < 10 && (!a3Online || !tsOnline)) {
+        if (!a3Online) {
+            reply = await queryServer('arma3', ipAddress, 'status');
+            if (reply[0] == '+') {a3Online = true;}
+        }
+        if(!tsOnline) {
+            reply = await queryServer('teamspeak3', ipAddress, 'status');
+            if (reply[0] == '+') {tsOnline = true;}
+        }
+
+        if(!tsOnline | !a3Online) {
+            console.log("Instance offline sleeping for 15 seconds");
+            await sleep(20000);
+        }
+        attempts++;
+    }
+
+    message = '```diff';
+    if(a3Online && tsOnline && serverOnline) {
+        message += '\nServer is Ready';
+    } else {
+        message +='\nMax wait time reached'
+    }
+
+    message += '\n________________________________';
+    message += (serverOnline) ? `\n+ Server: ONLINE \n  IP Address: ${ipAddress}` : '\n- Server: OFFLINE';
+    message += (a3Online) ? '\n+ ARMA3: ONLINE' : '\n- ARMA3: OFFLINE';
+    message += (tsOnline) ? '\n+ Teamspeak: ONLINE' : '\n- Teamspeak: OFFLINE';
+    message += '\n```'
+    
+    return message;
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+}
 
 // Every time a message is sent anywhere the bot is present,
 // this event will fire and we will check if the bot was mentioned.
@@ -121,7 +249,7 @@ bot.on('messageCreate', async (msg) => {
     }
 
     if (!msg.member.roles.includes(ROLEID)) {
-        await msg.channel.createMessage(`<@${msg.author.id}> You do not have the required roles`);
+        await msg.channel.createMessage(`<  You do not have the required roles`);
         return;
     }
 
