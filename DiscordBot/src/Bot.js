@@ -26,7 +26,7 @@ const { BOT_TOKEN } = require('../config.json');
 const { ROLEID } = require('../config.json');
 const { CHANNELID } = require('../config.json');
 
-const PREFIX = '$aws';
+const PREFIX = '$server';
 const HelpDocs =
     '\n Help Docs: \n `start`: Starts the server \n `stop`: Stops the server \n `status`: Returns the server status  ';
 
