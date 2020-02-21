@@ -279,7 +279,7 @@ bot.on('messageCreate', async (msg) => {
     // Get the appropriate handler for the command, if there is one.
     const commandHandler = commandHandlerForCommandName[commandName];
     if (!commandHandler) {
-        await msg.channel.createMessage('Unkown command, try `$aws help` for a list of commands');
+        await msg.channel.createMessage(`Unkown command, try ${PREFIX} help for a list of commands`);
         return;
     }
 
