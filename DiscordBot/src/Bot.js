@@ -45,7 +45,8 @@ const commandHandlerForCommandName = {};
 commandHandlerForCommandName['start'] = async (msg, args) => {
     try {
         state = await returnInstanceState();
-        aws.command(StartCommand)
+        if (state == "stopped") {
+            aws.command(StartCommand)
             .then(async function (data) {
                 console.warn('data = ', data);
                 msg.channel.createMessage(`Starting the server, i will let you know when its ready`);
@@ -59,7 +60,11 @@ commandHandlerForCommandName['start'] = async (msg, args) => {
                     msg.channel.createMessage(`Error starting the server`);
                 }
             });
-
+        } else {
+            message = `Server cannot be started as it is in ${state} state`;
+            msg.channel.createMessage(message);
+        }
+        
     } catch (err) {
         msg.channel.createMessage(`Error starting the server`);
         return msg.channel.createMessage(err);
