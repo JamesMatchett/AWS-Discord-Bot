@@ -42,8 +42,9 @@ bot.on('ready', () => {
 
 // starts instance and fires off query wait for instances
 const commandHandlerForCommandName = {};
-commandHandlerForCommandName['start'] = (msg, args) => {
+commandHandlerForCommandName['start'] = async (msg, args) => {
     try {
+        state = await returnInstanceState();
         aws.command(StartCommand)
             .then(async function (data) {
                 console.warn('data = ', data);
@@ -235,9 +236,9 @@ async function queryStart() {
     }
 }
 
-async function returnInstanceInfo() {
+async function returnInstanceState() {
     data = await aws.command(StatusCommand)
-    return reply = data.object.Reservations[0].Instances[0];
+    return reply = data.object.Reservations[0].Instances[0].State.Name;
 }
 
 // Every time a message is sent anywhere the bot is present,
