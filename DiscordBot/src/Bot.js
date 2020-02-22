@@ -235,6 +235,11 @@ async function queryStart() {
     }
 }
 
+async function returnInstanceInfo() {
+    data = await aws.command(StatusCommand)
+    return reply = data.object.Reservations[0].Instances[0];
+}
+
 // Every time a message is sent anywhere the bot is present,
 // this event will fire and we will check if the bot was mentioned.
 // If it was, the bot will attempt to respond with "Present".
