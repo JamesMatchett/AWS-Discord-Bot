@@ -71,20 +71,24 @@ commandHandlerForCommandName['start'] = async (msg, args) => {
     }
 };
 
-commandHandlerForCommandName['stop'] = (msg, args) => {
+commandHandlerForCommandName['stop'] = async (msg, args) => {
     try {
-        aws.command(StopCommand)
-            .then(function (data) {
-                console.warn('data = ', data);
-                return msg.channel.createMessage(`Stopping the server, please wait a few minutes before starting again`);
-            })
-            .catch(function (e) {
-                if (verboseLog) {
-                    msg.channel.createMessage(`Error stopping the server,  ${e}`);
-                } else {
-                    msg.channel.createMessage(`Error stopping the server`);
-                }
-            });
+        if (!await playersOnServer()) { 
+            aws.command(StopCommand)
+                .then(function (data) {
+                    console.warn('data = ', data);
+                    return msg.channel.createMessage(`Stopping the server, please wait a few minutes before starting again`);
+                })
+                .catch(function (e) {
+                    if (verboseLog) {
+                        msg.channel.createMessage(`Error stopping the server,  ${e}`);
+                    } else {
+                        msg.channel.createMessage(`Error stopping the server`);
+                    }
+                });
+        } else {
+            message = 'players still on server, cannot stop.'
+        }
 
     } catch (err) {
         msg.channel.createMessage(`Error stopping the server`);
@@ -241,11 +245,21 @@ async function queryStart() {
     }
 }
 
+async function getInstanceInfo() {
+    data = await aws.command(StatusCommand)
+    return data.object.Reservations[0].Instances[0];
+}
+
 async function returnInstanceState() {
     data = await aws.command(StatusCommand)
     return reply = data.object.Reservations[0].Instances[0].State.Name;
 }
 
+async function playersOnServer(){
+    data = await getInstanceInfo();
+    players = queryServer('arma3', data.PublicIpAddress, 'players');
+    return (players.length > 0);
+}
 // Every time a message is sent anywhere the bot is present,
 // this event will fire and we will check if the bot was mentioned.
 // If it was, the bot will attempt to respond with "Present".
