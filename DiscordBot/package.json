@@ -11,7 +11,7 @@
   "dependencies": {
     "aws-cli-js": "^2.0.6",
     "body-parser": "^1.19.0",
-    "eris": "^0.9.0",
+    "eris": "^0.11.3",
     "express": "^4.17.1",
     "options": "0.0.6"
   }
